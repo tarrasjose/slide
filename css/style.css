@@ -1,0 +1,36 @@
+body {
+  margin: 0px;
+}
+
+ul {
+  padding: 0px;
+  margin: 0px;
+  list-style: none;
+}
+
+img {
+  display: block; 
+  /* block para tirar os 4px das imagens */
+  max-width: 100%;
+}
+
+.slide {
+  display: flex;
+}
+
+.slide-wrapper {
+  overflow: hidden;
+  /* tirou o movimento da barra estourando a tela */
+}
+
+.slide li {
+  flex-shrink: 0;
+  /* shrink 0 pra não diminuir pra caber */
+  width: 80vw;
+  max-width: 800px;
+  margin: 0 20px;
+}
+
+.slide {
+  transform: translate3d(-500px, 0px, 0px);
+}
