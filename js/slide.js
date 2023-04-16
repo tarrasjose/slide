@@ -6,6 +6,9 @@ export class Slide {
     this.wrapper = document.querySelector(wrapper);
     this.dist = { finalPosition: 0, startX: 0, movement: 0 };
     this.activeClass = 'active';
+
+    // fazendo a bolinha saber onde o slide está
+    this.changeEvent = new Event('changeEvent');
   }
 
   transition(active) {
@@ -112,6 +115,10 @@ export class Slide {
     // console.log(this.index);
     this.dist.finalPosition = activeSlide.position;
     this.changeActiveClass();
+
+    // fazendo a bolinha saber onde o slide está
+    this.wrapper.dispatchEvent(this.changeEvent);
+    // emite o evento
   }
 
   changeActiveClass() {
@@ -166,6 +173,12 @@ export class Slide {
 }
 
 export default class SlideNav extends Slide {
+  constructor(slide, wrapper) {
+    super(slide, wrapper);
+    this.bindControlEvents();
+  }
+  // Quando eu uso constructor de uma class extends, eu tenho que usar o super para puxar tudo que tinha na anterior,
+
   addArrow(prev, next) {
     this.prevElement = document.querySelector(prev);
     this.nextElement = document.querySelector(next);
@@ -175,5 +188,48 @@ export default class SlideNav extends Slide {
   addArrowEvent() {
     this.prevElement.addEventListener('click', this.activePrevSlide);
     this.nextElement.addEventListener('click', this.activeNextSlide);
+  }
+
+  createControl() {
+    const control = document.createElement('ul');
+    control.dataset.control = 'slide';
+
+    this.slideArray.forEach((item, index) => {
+      control.innerHTML += `<li><a href="#slide${index + 1}">${index + 1}</a></li>`;
+      // slide + 1 só pra não começar no zero
+    });
+    this.wrapper.appendChild(control)
+    // console.log(control);
+    return control;
+  }
+
+  eventControl(item, index) {
+    item.addEventListener('click', (event) => {
+      event.preventDefault();
+      this.changeSlide(index);
+      // fazendo a bolinha saber onde o slide está, tira este abaixo
+      // this.activeControlItem();
+    });
+    // fazendo a bolinha saber onde o slide está
+    this.wrapper.addEventListener('changeEvent', this.activeControlItem);
+  }
+
+  activeControlItem() {
+    this.controlArray.forEach(item => item.classList.remove(this.activeClass));
+    this.controlArray[this.index.active].classList.add(this.activeClass);
+  }
+
+  addControl(customControl) {
+    this.control = document.querySelector(customControl) || this.createControl();
+    this.controlArray = [...this.control.children];
+    // console.log(this.control);
+    // console.log(this.controlArray);
+    this.activeControlItem() //ativa assim que a página carrega
+    this.controlArray.forEach(this.eventControl);
+  }
+
+  bindControlEvents() {
+    this.eventControl = this.eventControl.bind(this);
+    this.activeControlItem = this.activeControlItem.bind(this);
   }
 }
